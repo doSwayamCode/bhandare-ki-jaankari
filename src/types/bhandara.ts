@@ -7,6 +7,9 @@ export interface Bhandara {
   location_description: string
   created_at: string
   expires_at: string
+  user_id?: string
+  user_name?: string
+  upvotes?: number
 }
 
 export interface BhandaraFormData {

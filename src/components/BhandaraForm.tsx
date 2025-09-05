@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form'
 import { Upload, MapPin, Camera, FileText, X } from 'lucide-react'
 import type { BhandaraFormData } from '../types/bhandara'
 import { supabase } from '../lib/supabase'
+import { useAuth } from '../contexts/AuthContext'
 
 interface BhandaraFormProps {
   onSubmit: () => void
@@ -10,6 +11,7 @@ interface BhandaraFormProps {
 }
 
 export const BhandaraForm: React.FC<BhandaraFormProps> = ({ onSubmit, onClose }) => {
+  const { user } = useAuth()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [previewImages, setPreviewImages] = useState<string[]>([])
   
@@ -61,28 +63,47 @@ export const BhandaraForm: React.FC<BhandaraFormProps> = ({ onSubmit, onClose })
   }
 
   const onFormSubmit = async (data: BhandaraFormData) => {
+    // Only require authentication if Firebase is configured
+    if (!user) {
+      alert('You must be signed in to post a bhandara.')
+      return
+    }
+
     setIsSubmitting(true)
     
     try {
-      let photoUrls: string[] = []
-      
-      if (data.photos && data.photos.length > 0) {
-        photoUrls = await uploadImages(data.photos)
+      // Validate photos are provided (now mandatory)
+      if (!data.photos || data.photos.length === 0) {
+        throw new Error('Please select at least 1 photo')
       }
+
+      // Upload images (now required)
+      const photoUrls = await uploadImages(data.photos)
 
       const expiresAt = new Date()
       expiresAt.setHours(expiresAt.getHours() + 24)
 
+      const insertData: any = {
+        location_link: data.location_link,
+        nearby_landmark: data.nearby_landmark || null,
+        photo_urls: photoUrls,
+        menu: data.menu || null,
+        location_description: data.location_description,
+        expires_at: expiresAt.toISOString(),
+        upvotes: 0  // Initialize upvotes to 0
+      }
+
+      // Add user info (now required since auth is mandatory)
+      if (user) {
+        insertData.user_id = user.uid
+        insertData.user_name = user.displayName || user.email || 'Anonymous'
+      } else {
+        throw new Error('Authentication required to add bhandara')
+      }
+
       const { error } = await supabase
         .from('bhandaras')
-        .insert({
-          location_link: data.location_link,
-          nearby_landmark: data.nearby_landmark || null,
-          photo_urls: photoUrls,
-          menu: data.menu || null,
-          location_description: data.location_description,
-          expires_at: expiresAt.toISOString()
-        })
+        .insert(insertData)
 
       if (error) {
         throw error
@@ -196,7 +217,7 @@ export const BhandaraForm: React.FC<BhandaraFormProps> = ({ onSubmit, onClose })
         <div className="form-group">
           <label>
             <Camera size={16} style={{ display: 'inline-block', marginRight: '8px' }} />
-            Bhandara Photos (1-2 photos)
+            Bhandara Photos (1-2 photos) *
           </label>
           <div className="file-input-wrapper">
             <input
@@ -204,8 +225,9 @@ export const BhandaraForm: React.FC<BhandaraFormProps> = ({ onSubmit, onClose })
               multiple
               accept="image/*"
               {...register('photos', {
+                required: 'Please select at least 1 photo',
                 validate: (files) => {
-                  if (!files || files.length === 0) return true
+                  if (!files || files.length === 0) return 'Please select at least 1 photo'
                   if (files.length > 2) return 'Please select maximum 2 photos'
                   return true
                 }

@@ -237,7 +237,7 @@ export const HomePage: React.FC = () => {
           }}>
             Developed by{' '}
             <a 
-              href="https://linkedin.com/in/swayam" 
+              href="https://www.linkedin.com/in/swayam-gupta0708/" 
               target="_blank" 
               rel="noopener noreferrer"
               style={{
