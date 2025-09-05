@@ -9,7 +9,7 @@ export interface Bhandara {
   expires_at: string
   user_id?: string
   user_name?: string
-  upvotes?: number
+  upvotes: number
 }
 
 export interface BhandaraFormData {

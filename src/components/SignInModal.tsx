@@ -1,4 +1,3 @@
-import React from 'react'
 import { X, LogIn } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 
@@ -7,7 +6,7 @@ interface SignInModalProps {
   onClose: () => void
 }
 
-export const SignInModal: React.FC<SignInModalProps> = ({ isOpen, onClose }) => {
+export function SignInModal({ isOpen, onClose }: SignInModalProps) {
   const { signInWithGoogle } = useAuth()
 
   const handleSignIn = async () => {
