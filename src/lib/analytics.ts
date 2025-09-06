@@ -29,12 +29,12 @@ export interface BhandaraAnalyticsEvents {
 }
 
 // Type-safe analytics tracking function
-export const trackEvent = <T extends keyof BhandaraAnalyticsEvents>(
-  eventName: T,
-  parameters: BhandaraAnalyticsEvents[T]
+export const trackEvent = (
+  eventName: string,
+  parameters?: Record<string, any>
 ) => {
   if (analytics) {
-    logEvent(analytics, eventName, parameters)
+    logEvent(analytics, eventName, parameters || {})
   }
 }
 
