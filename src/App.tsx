@@ -4,16 +4,25 @@ import { AdminPage } from './pages/AdminPage'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/react'
 import { AuthProvider } from './contexts/AuthContext'
+import { useAnalytics } from './hooks/useAnalytics'
+
+function AppRoutes() {
+  useAnalytics() // Track page views
+  
+  return (
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/admin" element={<AdminPage />} />
+    </Routes>
+  )
+}
 
 function App() {
   return (
     <>
       <AuthProvider>
         <Router>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/admin" element={<AdminPage />} />
-          </Routes>
+          <AppRoutes />
         </Router>
       </AuthProvider>
       <Analytics />

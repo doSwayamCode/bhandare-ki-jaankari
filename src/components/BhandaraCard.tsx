@@ -3,6 +3,7 @@ import { MapPin, Clock, FileText, ChevronUp, Check } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import type { Bhandara } from '../types/bhandara'
+import { trackBhandaraViewed, trackBhandaraLiked } from '../lib/analytics'
 
 interface BhandaraCardProps {
   bhandara: Bhandara
@@ -14,6 +15,14 @@ export const BhandaraCard: React.FC<BhandaraCardProps> = ({ bhandara }) => {
   const [isUpvoting, setIsUpvoting] = useState(false)
   const [hasVoted, setHasVoted] = useState(false)
   const [checkingVoteStatus, setCheckingVoteStatus] = useState(false)
+
+  // Track bhandara view when card is mounted
+  useEffect(() => {
+    trackBhandaraViewed(
+      bhandara.id.toString(),
+      bhandara.location_description || bhandara.nearby_landmark || 'Unknown location'
+    )
+  }, [bhandara.id, bhandara.location_description, bhandara.nearby_landmark])
 
   // Check if user has already voted when component mounts or user changes
   useEffect(() => {
@@ -98,6 +107,12 @@ export const BhandaraCard: React.FC<BhandaraCardProps> = ({ bhandara }) => {
       
       setUpvotes(newUpvoteCount)
       setHasVoted(true)
+      
+      // Track successful upvote
+      trackBhandaraLiked(
+        bhandara.id.toString(),
+        bhandara.location_description || bhandara.nearby_landmark || 'Unknown location'
+      )
     } catch (error) {
       console.error('Error upvoting:', error)
       if (error && typeof error === 'object' && 'code' in error && error.code === '23505') { // Unique constraint violation

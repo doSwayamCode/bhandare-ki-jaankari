@@ -4,6 +4,7 @@ import { Upload, MapPin, Camera, FileText, X } from 'lucide-react'
 import type { BhandaraFormData } from '../types/bhandara'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
+import { trackFormStarted, trackBhandaraSubmitted } from '../lib/analytics'
 
 interface BhandaraFormProps {
   onSubmit: () => void
@@ -24,6 +25,11 @@ export const BhandaraForm: React.FC<BhandaraFormProps> = ({ onSubmit, onClose })
   } = useForm<BhandaraFormData>()
 
   const watchedPhotos = watch('photos')
+
+  // Track form started when component mounts
+  React.useEffect(() => {
+    trackFormStarted()
+  }, [])
 
   React.useEffect(() => {
     if (watchedPhotos && watchedPhotos.length > 0) {
@@ -111,6 +117,13 @@ export const BhandaraForm: React.FC<BhandaraFormProps> = ({ onSubmit, onClose })
 
       reset()
       setPreviewImages([])
+      
+      // Track successful bhandara submission
+      trackBhandaraSubmitted(
+        data.location_description || data.nearby_landmark || 'Unknown location',
+        photoUrls.length > 0
+      )
+      
       onSubmit()
       
       alert('Bhandara added successfully! It will be visible for 24 hours.')
