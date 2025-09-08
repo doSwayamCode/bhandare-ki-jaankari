@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Plus, X, LogOut, Menu } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { SignInModal } from './SignInModal'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 interface NavbarProps {
   showForm: boolean
@@ -14,13 +14,20 @@ export const Navbar: React.FC<NavbarProps> = ({ showForm, onToggleForm }) => {
   const [showSignInModal, setShowSignInModal] = useState(false)
   const [showMobileMenu, setShowMobileMenu] = useState(false)
   const location = useLocation()
+  const navigate = useNavigate()
 
   const handleAddBhandaraClick = () => {
     if (!user) {
       setShowSignInModal(true)
       return
     }
-    onToggleForm()
+    
+    // If we're not on the home page, navigate to home first
+    if (location.pathname !== '/') {
+      navigate('/?showForm=true')
+    } else {
+      onToggleForm()
+    }
   }
 
   const handleSignOut = async () => {
@@ -172,7 +179,13 @@ export const Navbar: React.FC<NavbarProps> = ({ showForm, onToggleForm }) => {
                 <>
                   {/* Add Bhandara Button - only for authenticated users */}
                   <button
-                    onClick={onToggleForm}
+                    onClick={() => {
+                      if (location.pathname !== '/') {
+                        navigate('/?showForm=true')
+                      } else {
+                        onToggleForm()
+                      }
+                    }}
                     className="btn-primary"
                     style={{
                       display: 'flex',
@@ -400,7 +413,11 @@ export const Navbar: React.FC<NavbarProps> = ({ showForm, onToggleForm }) => {
                       {/* Add Bhandara Button - Mobile */}
                       <button
                         onClick={() => {
-                          onToggleForm()
+                          if (location.pathname !== '/') {
+                            navigate('/?showForm=true')
+                          } else {
+                            onToggleForm()
+                          }
                           setShowMobileMenu(false)
                         }}
                         className="btn-primary"

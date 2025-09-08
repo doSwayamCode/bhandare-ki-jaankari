@@ -5,13 +5,25 @@ import { BhandaraForm } from '../components/BhandaraForm'
 import { BhandaraCard } from '../components/BhandaraCard'
 import type { Bhandara } from '../types/bhandara'
 import { RefreshCw } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 
 export const HomePage: React.FC = () => {
   const [bhandaras, setBhandaras] = useState<Bhandara[]>([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [showForm, setShowForm] = useState(false)
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  // Check URL parameter to show form automatically
+  useEffect(() => {
+    if (searchParams.get('showForm') === 'true') {
+      setShowForm(true)
+      // Remove the parameter from URL to clean it up
+      const newSearchParams = new URLSearchParams(searchParams)
+      newSearchParams.delete('showForm')
+      setSearchParams(newSearchParams, { replace: true })
+    }
+  }, [searchParams, setSearchParams])
 
   const fetchBhandaras = async () => {
     try {
