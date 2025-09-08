@@ -5,6 +5,7 @@ import { BhandaraForm } from '../components/BhandaraForm'
 import { BhandaraCard } from '../components/BhandaraCard'
 import type { Bhandara } from '../types/bhandara'
 import { RefreshCw } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 export const HomePage: React.FC = () => {
   const [bhandaras, setBhandaras] = useState<Bhandara[]>([])
@@ -211,51 +212,228 @@ export const HomePage: React.FC = () => {
 
         {/* Footer */}
         <footer style={{ 
-          textAlign: 'center', 
           marginTop: '48px',
-          padding: '24px 0',
+          padding: '0',
           color: '#fff',
           fontSize: '14px',
-          borderTop: '1px solid rgba(255, 255, 255, 0.2)',
-          background: 'rgba(0, 0, 0, 0.8)',
-          backdropFilter: 'blur(10px)',
-          borderRadius: '12px',
-          margin: '48px 0 24px 0'
+          background: 'rgba(0, 0, 0, 0.9)',
+          backdropFilter: 'blur(15px)',
+          borderRadius: '16px',
+          margin: '48px 0 24px 0',
+          overflow: 'hidden',
+          border: '1px solid rgba(255, 255, 255, 0.1)'
         }}>
-          <p style={{ 
-            marginBottom: '12px',
-            color: '#fff',
-            fontWeight: '500'
+          {/* Main Footer Content */}
+          <div style={{
+            padding: '32px 24px 24px 24px'
           }}>
-            Community-led platform to share bhandara information.
-            All listings are automatically removed after 24 hours.
-          </p>
-          <p style={{ 
-            fontSize: '13px', 
-            color: '#ccc',
-            margin: 0
-          }}>
-            Developed by{' '}
-            <a 
-              href="https://www.linkedin.com/in/swayam-gupta0708/" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              style={{
-                color: '#60a5fa',
-                textDecoration: 'none',
+            {/* Header Section */}
+            <div style={{
+              textAlign: 'center',
+              marginBottom: '32px',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+              paddingBottom: '24px'
+            }}>
+              <h3 style={{
+                margin: '0 0 8px 0',
+                fontSize: '18px',
                 fontWeight: '600',
-                transition: 'color 0.2s ease'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.color = '#93c5fd'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.color = '#60a5fa'
-              }}
-            >
-              Swayam
-            </a>
-          </p>
+                color: '#fff'
+              }}>
+                Bhandare ki Jaankari
+              </h3>
+              <p style={{
+                margin: '0',
+                fontSize: '14px',
+                color: '#aaa',
+                fontStyle: 'italic'
+              }}>
+                Community-led platform to share bhandara information
+              </p>
+            </div>
+
+            {/* Navigation Links Grid */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
+              gap: '16px',
+              marginBottom: '24px',
+              textAlign: 'center'
+            }}>
+              <Link 
+                to="/about" 
+                style={{ 
+                  color: '#60a5fa', 
+                  textDecoration: 'none', 
+                  fontWeight: '500',
+                  padding: '8px 12px',
+                  borderRadius: '6px',
+                  transition: 'all 0.2s ease',
+                  border: '1px solid rgba(96, 165, 250, 0.3)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(96, 165, 250, 0.1)'
+                  e.currentTarget.style.transform = 'translateY(-1px)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent'
+                  e.currentTarget.style.transform = 'translateY(0)'
+                }}
+              >
+                About Us
+              </Link>
+              <Link 
+                to="/privacy" 
+                style={{ 
+                  color: '#60a5fa', 
+                  textDecoration: 'none', 
+                  fontWeight: '500',
+                  padding: '8px 12px',
+                  borderRadius: '6px',
+                  transition: 'all 0.2s ease',
+                  border: '1px solid rgba(96, 165, 250, 0.3)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(96, 165, 250, 0.1)'
+                  e.currentTarget.style.transform = 'translateY(-1px)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent'
+                  e.currentTarget.style.transform = 'translateY(0)'
+                }}
+              >
+                Privacy Policy
+              </Link>
+              <Link 
+                to="/terms" 
+                style={{ 
+                  color: '#60a5fa', 
+                  textDecoration: 'none', 
+                  fontWeight: '500',
+                  padding: '8px 12px',
+                  borderRadius: '6px',
+                  transition: 'all 0.2s ease',
+                  border: '1px solid rgba(96, 165, 250, 0.3)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(96, 165, 250, 0.1)'
+                  e.currentTarget.style.transform = 'translateY(-1px)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent'
+                  e.currentTarget.style.transform = 'translateY(0)'
+                }}
+              >
+                Terms of Service
+              </Link>
+              <Link 
+                to="/faq" 
+                style={{ 
+                  color: '#60a5fa', 
+                  textDecoration: 'none', 
+                  fontWeight: '500',
+                  padding: '8px 12px',
+                  borderRadius: '6px',
+                  transition: 'all 0.2s ease',
+                  border: '1px solid rgba(96, 165, 250, 0.3)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(96, 165, 250, 0.1)'
+                  e.currentTarget.style.transform = 'translateY(-1px)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent'
+                  e.currentTarget.style.transform = 'translateY(0)'
+                }}
+              >
+                FAQ
+              </Link>
+              <Link 
+                to="/contact" 
+                style={{ 
+                  color: '#60a5fa', 
+                  textDecoration: 'none', 
+                  fontWeight: '500',
+                  padding: '8px 12px',
+                  borderRadius: '6px',
+                  transition: 'all 0.2s ease',
+                  border: '1px solid rgba(96, 165, 250, 0.3)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(96, 165, 250, 0.1)'
+                  e.currentTarget.style.transform = 'translateY(-1px)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent'
+                  e.currentTarget.style.transform = 'translateY(0)'
+                }}
+              >
+                Contact
+              </Link>
+            </div>
+
+            {/* Info Section */}
+            <div style={{
+              textAlign: 'center',
+              padding: '16px',
+              background: 'rgba(255, 255, 255, 0.05)',
+              borderRadius: '8px',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              marginBottom: '20px'
+            }}>
+              <p style={{ 
+                margin: '0 0 8px 0',
+                color: '#e0e0e0',
+                fontWeight: '500',
+                fontSize: '13px'
+              }}>
+                ⏰ All listings are automatically removed after 24 hours
+              </p>
+              <p style={{ 
+                margin: '0',
+                color: '#bbb',
+                fontSize: '12px'
+              }}>
+                Helping communities find and share free meals across India
+              </p>
+            </div>
+          </div>
+
+          {/* Bottom Credit Section */}
+          <div style={{
+            background: 'rgba(0, 0, 0, 0.8)',
+            padding: '16px 24px',
+            textAlign: 'center',
+            borderTop: '1px solid rgba(255, 255, 255, 0.1)'
+          }}>
+            <p style={{ 
+              fontSize: '12px', 
+              color: '#999',
+              margin: 0
+            }}>
+              Developed with ❤️ by{' '}
+              <a 
+                href="https://www.linkedin.com/in/swayam-gupta0708/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                style={{
+                  color: '#60a5fa',
+                  textDecoration: 'none',
+                  fontWeight: '600',
+                  transition: 'color 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = '#93c5fd'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = '#60a5fa'
+                }}
+              >
+                Swayam Gupta
+              </a>
+              {' '}• © 2025
+            </p>
+          </div>
         </footer>
       </div>
     </div>

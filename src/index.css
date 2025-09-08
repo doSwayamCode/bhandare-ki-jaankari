@@ -361,3 +361,58 @@ input::placeholder, textarea::placeholder {
 .modal-content::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.5);
 }
+
+/* Responsive Navbar Styles */
+@media (max-width: 768px) {
+  /* Hide desktop navigation */
+  .desktop-nav {
+    display: none !important;
+  }
+  
+  /* Hide desktop actions */
+  .desktop-actions {
+    display: none !important;
+  }
+  
+  /* Show mobile menu button */
+  .mobile-menu-btn {
+    display: block !important;
+  }
+  
+  /* Logo text responsive */
+  h1 {
+    font-size: 16px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  /* Mobile menu styling */
+  .mobile-menu {
+    animation: slideDown 0.3s ease;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Even smaller screens */
+  h1 {
+    font-size: 14px !important;
+  }
+  
+  /* Logo adjustments */
+  img {
+    width: 40px !important;
+    height: 40px !important;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

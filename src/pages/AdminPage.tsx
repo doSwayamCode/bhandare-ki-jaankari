@@ -34,13 +34,13 @@ export const AdminPage: React.FC = () => {
       
       // First, delete expired bhandaras
       await supabase
-        .from('bhandara')
+        .from('bhandaras')
         .delete()
         .lt('expires_at', now)
       
       // Then fetch active bhandaras
       const { data, error } = await supabase
-        .from('bhandara')
+        .from('bhandaras')
         .select('*')
         .gte('expires_at', now)
         .order('created_at', { ascending: false })
@@ -61,7 +61,7 @@ export const AdminPage: React.FC = () => {
     setDeleting(id)
     try {
       const { error } = await supabase
-        .from('bhandara')
+        .from('bhandaras')
         .delete()
         .eq('id', id)
 

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test 24-Hour Deletion System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #1a1a1a;
+            color: #fff;
+        }
+
+        .test-section {
+            background: #2a2a2a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 1px solid #333;
+        }
+
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+
+        .pass {
+            background-color: #1a5f1a;
+        }
+
+        .fail {
+            background-color: #5f1a1a;
+        }
+
+        .info {
+            background-color: #1a3a5f;
+        }
+
+        button {
+            background: #ff6b35;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        button:hover {
+            background: #e55a2b;
+        }
+
+        #results {
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>24-Hour Deletion System Test</h1>
+
+    <div class="test-section">
+        <h2>Test Overview</h2>
+        <p>This test will verify that the automatic deletion system is working properly:</p>
+        <ul>
+            <li>Check if expired bhandaras are being deleted</li>
+            <li>Verify active bhandaras remain visible</li>
+            <li>Test the expiration time calculation</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>Manual Testing Instructions</h2>
+        <div class="status info">
+            <strong>How the system works:</strong>
+            <ol>
+                <li>When a new bhandara is added, expires_at is set to current time + 24 hours</li>
+                <li>Every time HomePage loads or fetchBhandaras() is called, it first deletes expired entries</li>
+                <li>Then it fetches only active (non-expired) bhandaras</li>
+            </ol>
+        </div>
+
+        <button onclick="testCurrentImplementation()">Test Current System</button>
+        <button onclick="simulateExpiredEntry()">Simulate Expired Entry Test</button>
+        <button onclick="checkExpirationDates()">Check Expiration Dates</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Results</h2>
+        <div id="results"></div>
+    </div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.skypack.dev/@supabase/supabase-js@2'
+
+        // Note: Replace these with your actual Supabase credentials
+        const supabaseUrl = 'YOUR_SUPABASE_URL'
+        const supabaseKey = 'YOUR_SUPABASE_ANON_KEY'
+        const supabase = createClient(supabaseUrl, supabaseKey)
+
+        window.testCurrentImplementation = async function () {
+            const results = document.getElementById('results')
+            results.innerHTML = 'Testing current implementation...\n\n'
+
+            try {
+                // Test 1: Check current bhandaras
+                results.innerHTML += '1. Fetching current bhandaras...\n'
+                const { data: allBhandaras, error: allError } = await supabase
+                    .from('bhandaras')
+                    .select('id, location_description, expires_at, created_at')
+                    .order('created_at', { ascending: false })
+
+                if (allError) {
+                    results.innerHTML += `Error: ${allError.message}\n`
+                    return
+                }
+
+                results.innerHTML += `Found ${allBhandaras.length} total bhandaras\n\n`
+
+                // Test 2: Check expiration status
+                const now = new Date().toISOString()
+                let expiredCount = 0
+                let activeCount = 0
+
+                allBhandaras.forEach(bhandara => {
+                    const isExpired = bhandara.expires_at < now
+                    if (isExpired) {
+                        expiredCount++
+                        results.innerHTML += `EXPIRED: ${bhandara.location_description} (expired: ${bhandara.expires_at})\n`
+                    } else {
+                        activeCount++
+                        const timeLeft = new Date(bhandara.expires_at) - new Date()
+                        const hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60))
+                        const minutesLeft = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60))
+                        results.innerHTML += `ACTIVE: ${bhandara.location_description} (${hoursLeft}h ${minutesLeft}m left)\n`
+                    }
+                })
+
+                results.innerHTML += `\nSummary:\n`
+                results.innerHTML += `- Active bhandaras: ${activeCount}\n`
+                results.innerHTML += `- Expired bhandaras: ${expiredCount}\n\n`
+
+                if (expiredCount > 0) {
+                    results.innerHTML += `⚠️  Found ${expiredCount} expired bhandaras that should be cleaned up!\n`
+                    results.innerHTML += `This suggests the deletion system may not be running properly.\n`
+                } else {
+                    results.innerHTML += `✅ No expired bhandaras found - system appears to be working!\n`
+                }
+
+            } catch (error) {
+                results.innerHTML += `Error: ${error.message}\n`
+            }
+        }
+
+        window.simulateExpiredEntry = async function () {
+            const results = document.getElementById('results')
+            results.innerHTML = 'Testing deletion mechanism...\n\n'
+
+            try {
+                // Simulate the deletion call that happens in fetchBhandaras
+                const now = new Date().toISOString()
+                results.innerHTML += `Current time: ${now}\n\n`
+
+                // This is the exact deletion query from HomePage.tsx
+                results.innerHTML += 'Running deletion query...\n'
+                const { data: deletedData, error: deleteError } = await supabase
+                    .from('bhandaras')
+                    .delete()
+                    .lt('expires_at', now)
+                    .select()
+
+                if (deleteError) {
+                    results.innerHTML += `Deletion error: ${deleteError.message}\n`
+                    return
+                }
+
+                results.innerHTML += `Deleted ${deletedData?.length || 0} expired bhandaras\n\n`
+
+                if (deletedData && deletedData.length > 0) {
+                    results.innerHTML += 'Deleted entries:\n'
+                    deletedData.forEach(item => {
+                        results.innerHTML += `- ${item.location_description} (expired: ${item.expires_at})\n`
+                    })
+                } else {
+                    results.innerHTML += '✅ No expired entries to delete\n'
+                }
+
+                // Now fetch active bhandaras
+                results.innerHTML += '\nFetching active bhandaras...\n'
+                const { data: activeBhandaras, error: fetchError } = await supabase
+                    .from('bhandaras')
+                    .select('*')
+                    .gte('expires_at', now)
+                    .order('created_at', { ascending: false })
+
+                if (fetchError) {
+                    results.innerHTML += `Fetch error: ${fetchError.message}\n`
+                    return
+                }
+
+                results.innerHTML += `Found ${activeBhandaras.length} active bhandaras\n`
+
+            } catch (error) {
+                results.innerHTML += `Error: ${error.message}\n`
+            }
+        }
+
+        window.checkExpirationDates = async function () {
+            const results = document.getElementById('results')
+            results.innerHTML = 'Checking expiration date calculations...\n\n'
+
+            try {
+                const { data: bhandaras, error } = await supabase
+                    .from('bhandaras')
+                    .select('id, location_description, created_at, expires_at')
+                    .order('created_at', { ascending: false })
+                    .limit(10)
+
+                if (error) {
+                    results.innerHTML += `Error: ${error.message}\n`
+                    return
+                }
+
+                if (bhandaras.length === 0) {
+                    results.innerHTML += 'No bhandaras found to test\n'
+                    return
+                }
+
+                results.innerHTML += 'Checking recent bhandaras:\n\n'
+
+                bhandaras.forEach(bhandara => {
+                    const created = new Date(bhandara.created_at)
+                    const expires = new Date(bhandara.expires_at)
+                    const hoursDiff = (expires - created) / (1000 * 60 * 60)
+
+                    results.innerHTML += `${bhandara.location_description}:\n`
+                    results.innerHTML += `  Created: ${created.toLocaleString()}\n`
+                    results.innerHTML += `  Expires: ${expires.toLocaleString()}\n`
+                    results.innerHTML += `  Duration: ${hoursDiff.toFixed(1)} hours\n`
+
+                    if (Math.abs(hoursDiff - 24) < 0.1) {
+                        results.innerHTML += `  ✅ Correct 24-hour expiration\n\n`
+                    } else {
+                        results.innerHTML += `  ⚠️  Unexpected duration (should be ~24 hours)\n\n`
+                    }
+                })
+
+            } catch (error) {
+                results.innerHTML += `Error: ${error.message}\n`
+            }
+        }
+    </script>
+</body>
+
+</html>

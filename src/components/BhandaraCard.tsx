@@ -18,11 +18,8 @@ export const BhandaraCard: React.FC<BhandaraCardProps> = ({ bhandara }) => {
 
   // Track bhandara view when card is mounted
   useEffect(() => {
-    trackBhandaraViewed(
-      bhandara.id.toString(),
-      bhandara.location_description || bhandara.nearby_landmark || 'Unknown location'
-    )
-  }, [bhandara.id, bhandara.location_description, bhandara.nearby_landmark])
+    trackBhandaraViewed(bhandara.id, bhandara.location_link)
+  }, [])
 
   // Check if user has already voted when component mounts or user changes
   useEffect(() => {
@@ -125,166 +122,269 @@ export const BhandaraCard: React.FC<BhandaraCardProps> = ({ bhandara }) => {
       setIsUpvoting(false)
     }
   }
-  const getTimeRemaining = () => {
+
+  const formatTimeRemaining = (expiresAt: string) => {
     const now = new Date()
-    const expires = new Date(bhandara.expires_at)
-    const diff = expires.getTime() - now.getTime()
+    const expiry = new Date(expiresAt)
+    const diff = expiry.getTime() - now.getTime()
     
     if (diff <= 0) return 'Expired'
     
     const hours = Math.floor(diff / (1000 * 60 * 60))
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
     
-    if (hours > 0) {
-      return `${hours}h ${minutes}m remaining`
-    } else {
-      return `${minutes}m remaining`
+    if (hours >= 24) {
+      const days = Math.floor(hours / 24)
+      return `${days} day${days > 1 ? 's' : ''} left`
     }
-  }
-
-  const openGoogleMaps = () => {
-    window.open(bhandara.location_link, '_blank')
-  }
-
-  const formatCreatedTime = () => {
-    const created = new Date(bhandara.created_at)
-    const now = new Date()
-    const diff = now.getTime() - created.getTime()
-    const hours = Math.floor(diff / (1000 * 60 * 60))
     
-    if (hours === 0) {
-      const minutes = Math.floor(diff / (1000 * 60))
-      return `${minutes} minutes ago`
-    } else if (hours < 24) {
-      return `${hours} hours ago`
-    } else {
-      return created.toLocaleDateString()
+    if (hours > 0) {
+      return `${hours}h ${minutes}m left`
+    }
+    
+    return `${minutes}m left`
+  }
+
+  const formatLocation = (locationLink: string) => {
+    try {
+      const url = new URL(locationLink)
+      if (url.hostname.includes('maps.google')) {
+        return 'Google Maps'
+      } else if (url.hostname.includes('maps.apple')) {
+        return 'Apple Maps'
+      } else if (url.hostname.includes('waze')) {
+        return 'Waze'
+      }
+      return 'Map Link'
+    } catch {
+      return 'Map Link'
     }
   }
 
   return (
-    <div className="card" style={{ overflow: 'hidden' }}>
-      {/* Photos - Top Half */}
-      {bhandara.photo_urls && bhandara.photo_urls.length > 0 && (
-        <div style={{ 
-          marginBottom: '20px',
-          height: '250px',
-          overflow: 'hidden',
-          borderRadius: '8px',
+    <div style={{
+      background: 'rgba(15, 15, 15, 0.95)',
+      backdropFilter: 'blur(10px)',
+      border: '1px solid rgba(100, 100, 100, 0.3)',
+      borderRadius: '16px',
+      marginBottom: '20px',
+      transition: 'all 0.3s ease',
+      position: 'relative',
+      overflow: 'hidden',
+      display: 'flex',
+      flexDirection: 'column',
+      height: '500px' // Fixed height for consistent layout
+    }}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.transform = 'translateY(-2px)'
+      e.currentTarget.style.boxShadow = '0 8px 25px rgba(100, 100, 255, 0.1)'
+      e.currentTarget.style.borderColor = 'rgba(100, 100, 255, 0.3)'
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.transform = 'translateY(0)'
+      e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.1)'
+      e.currentTarget.style.borderColor = 'rgba(100, 100, 100, 0.2)'
+    }}>
+      
+      {/* Top 50% - Image Area */}
+      {bhandara.photo_urls && bhandara.photo_urls.length > 0 ? (
+        <div style={{
+          height: '50%', // Takes up 50% of card height
+          width: '100%',
           display: 'flex',
-          gap: '8px'
+          gap: bhandara.photo_urls.length > 1 ? '2px' : '0px',
+          padding: '0',
+          margin: '0',
+          background: '#000',
+          borderRadius: '16px 16px 0 0', // Only round top corners
+          overflow: 'hidden',
+          position: 'relative',
+          flex: '0 0 50%' // Explicit flex sizing
         }}>
           {bhandara.photo_urls.map((url, index) => (
             <img
               key={index}
               src={url}
               alt={`Bhandara ${index + 1}`}
-              style={{ 
+              style={{
                 width: bhandara.photo_urls!.length === 1 ? '100%' : '50%',
                 height: '100%',
                 objectFit: 'cover',
-                borderRadius: '8px'
+                border: 'none',
+                display: 'block',
+                margin: '0',
+                padding: '0',
+                minHeight: '100%',
+                minWidth: bhandara.photo_urls!.length === 1 ? '100%' : '50%'
+              }}
+              onError={(e) => {
+                e.currentTarget.style.display = 'none'
               }}
             />
           ))}
         </div>
+      ) : (
+        // If no images, show a placeholder or reduce content area
+        <div style={{
+          height: '60px', // Small placeholder area
+          background: 'rgba(100, 100, 100, 0.1)',
+          margin: '8px',
+          borderRadius: '8px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#666'
+        }}>
+          No image available
+        </div>
       )}
 
-      {/* Content - Bottom Half or Full Card */}
-      <div style={{ 
-        padding: bhandara.photo_urls && bhandara.photo_urls.length > 0 ? '0' : '8px 0'
+      {/* Bottom 50% - Content Area */}
+      <div style={{
+        height: '50%', // Takes exactly 50% of remaining space
+        padding: '12px 16px 16px 16px', // Reduced padding to fit content better
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        overflow: 'hidden'
       }}>
-        {/* Location Description */}
-        <h3 style={{ 
-          marginBottom: '12px', 
-          fontSize: bhandara.photo_urls && bhandara.photo_urls.length > 0 ? '20px' : '24px', 
-          fontWeight: '600',
-          lineHeight: '1.3'
-        }}>
-          {bhandara.location_description}
-        </h3>
-
-        {/* Posted by user info */}
-        {bhandara.user_name && (
-          <p style={{ 
-            color: '#888', 
-            marginBottom: '16px', 
-            fontSize: '14px',
-            fontStyle: 'italic'
-          }}>
-            Posted by {bhandara.user_name}
-          </p>
-        )}
-
-        {/* Nearby Landmark */}
-        {bhandara.nearby_landmark && (
-          <p style={{ 
-            color: '#888', 
-            marginBottom: '16px', 
-            fontSize: bhandara.photo_urls && bhandara.photo_urls.length > 0 ? '15px' : '18px',
+        
+        {/* Main Content */}
+        <div>
+          {/* Header with time remaining */}
+          <div style={{
             display: 'flex',
+            justifyContent: 'space-between',
             alignItems: 'center',
-            gap: '8px'
+            marginBottom: '12px'
           }}>
-            <span>📍</span> {bhandara.nearby_landmark}
-          </p>
-        )}
-
-        {/* Menu */}
-        {bhandara.menu && (
-          <div style={{ marginBottom: '20px' }}>
-            <div style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              marginBottom: '10px',
-              color: '#ff6b35'
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
             }}>
-              <FileText size={18} style={{ marginRight: '8px' }} />
-              <span style={{ 
-                fontSize: bhandara.photo_urls && bhandara.photo_urls.length > 0 ? '16px' : '18px', 
-                fontWeight: '500' 
+              <Clock size={16} style={{ color: '#999' }} />
+              <span style={{
+                fontSize: '14px',
+                color: '#999'
               }}>
-                Menu
+                {formatTimeRemaining(bhandara.expires_at)}
               </span>
             </div>
-            <p style={{ 
-              color: '#ccc', 
-              fontSize: bhandara.photo_urls && bhandara.photo_urls.length > 0 ? '15px' : '17px', 
-              lineHeight: '1.6',
-              whiteSpace: 'pre-line',
-              background: 'rgba(255, 255, 255, 0.05)',
-              padding: '12px',
-              borderRadius: '6px'
+          </div>
+
+          {/* Location */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: '8px',
+            marginBottom: '10px'
+          }}>
+            <MapPin size={16} style={{ color: '#646cff', marginTop: '2px', flexShrink: 0 }} />
+            <div>
+              {bhandara.nearby_landmark && (
+                <p style={{
+                  fontSize: '14px',
+                  color: '#ccc',
+                  margin: '0 0 4px 0',
+                  lineHeight: '1.4'
+                }}>
+                  Near: {bhandara.nearby_landmark}
+                </p>
+              )}
+              <a
+                href={bhandara.location_link}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  color: '#646cff',
+                  textDecoration: 'none',
+                  fontSize: '14px',
+                  fontWeight: '500'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.textDecoration = 'underline'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.textDecoration = 'none'
+                }}
+              >
+                📍 Open {formatLocation(bhandara.location_link)}
+              </a>
+            </div>
+          </div>
+
+          {/* Description */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: '8px',
+            marginBottom: '10px'
+          }}>
+            <FileText size={16} style={{ color: '#999', marginTop: '2px', flexShrink: 0 }} />
+            <p style={{
+              fontSize: '14px',
+              color: '#ccc',
+              margin: 0,
+              lineHeight: '1.5',
+              flex: 1
             }}>
-              {bhandara.menu}
+              {bhandara.location_description}
             </p>
           </div>
-        )}
 
-        {/* Actions and Info */}
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center',
-          marginTop: '20px',
-          paddingTop: '20px',
-          borderTop: '1px solid rgba(255, 255, 255, 0.1)'
+          {/* Menu (if available) */}
+          {bhandara.menu && (
+            <div style={{
+              marginTop: '8px',
+              padding: '8px',
+              background: 'rgba(100, 100, 255, 0.1)',
+              borderRadius: '6px',
+              border: '1px solid rgba(100, 100, 255, 0.2)'
+            }}>
+              <p style={{
+                fontSize: '11px',
+                color: '#646cff',
+                margin: '0 0 4px 0',
+                fontWeight: '600',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px'
+              }}>
+                Menu
+              </p>
+              <p style={{
+                fontSize: '13px',
+                color: '#ccc',
+                margin: 0,
+                lineHeight: '1.4'
+              }}>
+                {bhandara.menu}
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Footer with upvote and metadata */}
+        <div style={{
+          paddingTop: '6px',
+          borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+          marginTop: 'auto',
+          flexShrink: 0 // Prevent footer from shrinking
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <button 
-              onClick={openGoogleMaps}
-              className="btn-primary"
-              style={{ 
-                padding: bhandara.photo_urls && bhandara.photo_urls.length > 0 ? '10px 18px' : '12px 20px',
-                fontSize: bhandara.photo_urls && bhandara.photo_urls.length > 0 ? '14px' : '16px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-              }}
-            >
-              <MapPin size={bhandara.photo_urls && bhandara.photo_urls.length > 0 ? 16 : 18} />
-              View Location
-            </button>
+          {/* Upvote button and action row */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '6px'
+          }}>
+            <span style={{
+              fontSize: '11px',
+              color: '#888',
+              fontStyle: 'italic'
+            }}>
+              Upvote if above bhandara is genuine
+            </span>
             
             {/* Upvote Button */}
             <button
@@ -293,7 +393,7 @@ export const BhandaraCard: React.FC<BhandaraCardProps> = ({ bhandara }) => {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '6px',
+                gap: '4px',
                 background: hasVoted 
                   ? 'rgba(34, 197, 94, 0.2)' 
                   : user 
@@ -309,9 +409,9 @@ export const BhandaraCard: React.FC<BhandaraCardProps> = ({ bhandara }) => {
                   : user 
                     ? '#4ade80' 
                     : '#999',
-                padding: '8px 12px',
-                borderRadius: '6px',
-                fontSize: '13px',
+                padding: '4px 8px',
+                borderRadius: '4px',
+                fontSize: '11px',
                 cursor: hasVoted 
                   ? 'not-allowed' 
                   : user 
@@ -328,29 +428,28 @@ export const BhandaraCard: React.FC<BhandaraCardProps> = ({ bhandara }) => {
                     : 'Sign in to upvote'
               }
             >
-              {hasVoted ? <Check size={16} /> : <ChevronUp size={16} />}
+              {hasVoted ? <Check size={12} /> : <ChevronUp size={12} />}
               {upvotes}
-              {hasVoted && <span style={{ fontSize: '11px', marginLeft: '4px' }}>✓</span>}
+              {hasVoted && <span style={{ fontSize: '9px', marginLeft: '2px' }}>✓</span>}
             </button>
           </div>
           
-          <div style={{ textAlign: 'right' }}>
-            <div className="time-remaining" style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '6px',
-              fontSize: bhandara.photo_urls && bhandara.photo_urls.length > 0 ? '13px' : '14px'
+          {/* Metadata row */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'flex-start',
+            alignItems: 'center',
+            fontSize: '10px',
+            color: '#666',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden'
+          }}>
+            <span style={{ 
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
             }}>
-              <Clock size={bhandara.photo_urls && bhandara.photo_urls.length > 0 ? 14 : 16} />
-              {getTimeRemaining()}
-            </div>
-            <div style={{ 
-              color: '#666', 
-              fontSize: bhandara.photo_urls && bhandara.photo_urls.length > 0 ? '11px' : '12px',
-              marginTop: '4px'
-            }}>
-              Added {formatCreatedTime()}
-            </div>
+              Added by {bhandara.user_name || 'Anonymous'}
+            </span>
           </div>
         </div>
       </div>
