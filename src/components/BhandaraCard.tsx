@@ -237,7 +237,7 @@ export const BhandaraCard: React.FC<BhandaraCardProps> = ({ bhandara }) => {
               display: 'flex', 
               alignItems: 'center', 
               marginBottom: '10px',
-              color: '#646cff'
+              color: '#ff6b35'
             }}>
               <FileText size={18} style={{ marginRight: '8px' }} />
               <span style={{ 

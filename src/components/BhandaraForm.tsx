@@ -5,6 +5,7 @@ import type { BhandaraFormData } from '../types/bhandara'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 import { trackFormStarted, trackBhandaraSubmitted } from '../lib/analytics'
+import { notificationManager } from '../lib/notifications'
 
 interface BhandaraFormProps {
   onSubmit: () => void
@@ -115,6 +116,15 @@ export const BhandaraForm: React.FC<BhandaraFormProps> = ({ onSubmit, onClose })
         throw error
       }
 
+      // Send notification to all users who enabled notifications
+      if (notificationManager.isPermissionGranted()) {
+        notificationManager.sendBhandaraNotification({
+          location_description: data.location_description,
+          nearby_landmark: data.nearby_landmark,
+          menu: data.menu
+        })
+      }
+
       reset()
       setPreviewImages([])
       
@@ -222,7 +232,7 @@ export const BhandaraForm: React.FC<BhandaraFormProps> = ({ onSubmit, onClose })
           <label>Nearby Landmark</label>
           <input
             type="text"
-            placeholder="e.g., Near ABC Mall, opposite XYZ Temple"
+            placeholder="e.g., Near Mall, opposite of Temple"
             {...register('nearby_landmark')}
           />
         </div>
@@ -285,7 +295,7 @@ export const BhandaraForm: React.FC<BhandaraFormProps> = ({ onSubmit, onClose })
           <label>Location Description *</label>
           <textarea
             rows={3}
-            placeholder="Describe the location in words (e.g., Main road near traffic light, first floor of community center)"
+            placeholder="Describe the location in words or write a popular shop/venue nearby"
             {...register('location_description', { 
               required: 'Location description is required' 
             })}

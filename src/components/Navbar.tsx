@@ -36,11 +36,12 @@ export const Navbar: React.FC<NavbarProps> = ({ showForm, onToggleForm }) => {
     <nav style={{
       position: 'sticky',
       top: 0,
-      background: 'rgba(10, 10, 10, 0.95)',
+      background: '#000000',
       backdropFilter: 'blur(10px)',
-      borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+      borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
       padding: '8px 0',
-      zIndex: 1000
+      zIndex: 1000,
+      boxShadow: '0 2px 10px rgba(0, 0, 0, 0.5)'
     }}>
       <div className="container" style={{
         display: 'flex',
@@ -54,16 +55,26 @@ export const Navbar: React.FC<NavbarProps> = ({ showForm, onToggleForm }) => {
         <div style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '8px'
+          gap: '12px'
         }}>
+          {/* Logo Image */}
+          <img 
+            src="/logo-removebg-preview.png" 
+            alt="Bhandare ki jaankari Logo" 
+            style={{
+              width: '56px',
+              height: '56px',
+              objectFit: 'contain'
+            }}
+          />
           <h1 style={{
             fontSize: '18px',
             fontWeight: '600',
-            background: 'linear-gradient(135deg, #646cff 0%, #747bff 100%)',
-            backgroundClip: 'text',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            margin: 0
+            fontFamily: 'Poppins, sans-serif',
+            color: 'white',
+            margin: 0,
+            letterSpacing: '0.01em',
+            textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)'
           }}>
             Bhandare ki jaankari
           </h1>
@@ -116,20 +127,22 @@ export const Navbar: React.FC<NavbarProps> = ({ showForm, onToggleForm }) => {
                       gap: '4px',
                       padding: '6px 12px',
                       background: 'transparent',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      color: '#999',
+                      border: '1px solid rgba(255, 255, 255, 0.3)',
+                      color: 'rgba(255, 255, 255, 0.9)',
                       borderRadius: '6px',
                       fontSize: '13px',
                       cursor: 'pointer',
                       transition: 'all 0.2s ease'
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'
+                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)'
                       e.currentTarget.style.color = '#fff'
+                      e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.5)'
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.background = 'transparent'
-                      e.currentTarget.style.color = '#999'
+                      e.currentTarget.style.color = 'rgba(255, 255, 255, 0.9)'
+                      e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.3)'
                     }}
                   >
                     <LogOut size={14} />
@@ -146,20 +159,23 @@ export const Navbar: React.FC<NavbarProps> = ({ showForm, onToggleForm }) => {
                       alignItems: 'center',
                       gap: '8px',
                       padding: '8px 16px',
-                      background: '#4285f4',
+                      background: 'linear-gradient(135deg, #ff8c42 0%, #ffab61 100%)',
                       border: 'none',
                       color: 'white',
                       borderRadius: '6px',
                       fontSize: '14px',
                       fontWeight: '500',
                       cursor: 'pointer',
-                      transition: 'all 0.2s ease'
+                      transition: 'all 0.2s ease',
+                      boxShadow: '0 2px 8px rgba(255, 140, 66, 0.3)'
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.background = '#3367d6'
+                      e.currentTarget.style.background = 'linear-gradient(135deg, #e67938 0%, #e6955b 100%)'
+                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(255, 140, 66, 0.4)'
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.background = '#4285f4'
+                      e.currentTarget.style.background = 'linear-gradient(135deg, #ff8c42 0%, #ffab61 100%)'
+                      e.currentTarget.style.boxShadow = '0 2px 8px rgba(255, 140, 66, 0.3)'
                     }}
                   >
                     <svg width="18" height="18" viewBox="0 0 24 24">

@@ -5,6 +5,7 @@ import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/react'
 import { AuthProvider } from './contexts/AuthContext'
 import { useAnalytics } from './hooks/useAnalytics'
+import { NotificationBanner } from './components/NotificationBanner'
 
 function AppRoutes() {
   useAnalytics() // Track page views
@@ -25,6 +26,7 @@ function App() {
           <AppRoutes />
         </Router>
       </AuthProvider>
+      <NotificationBanner />
       <Analytics />
       <SpeedInsights />
     </>
