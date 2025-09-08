@@ -172,9 +172,9 @@ export const BhandaraCard: React.FC<BhandaraCardProps> = ({ bhandara }) => {
       position: 'relative',
       overflow: 'hidden',
       display: 'flex',
-      flexDirection: 'column',
-      height: '500px' // Fixed height for consistent layout
+      flexDirection: 'column'
     }}
+    className="bhandara-card"
     onMouseEnter={(e) => {
       e.currentTarget.style.transform = 'translateY(-2px)'
       e.currentTarget.style.boxShadow = '0 8px 25px rgba(100, 100, 255, 0.1)'
@@ -240,14 +240,15 @@ export const BhandaraCard: React.FC<BhandaraCardProps> = ({ bhandara }) => {
       )}
 
       {/* Bottom 50% - Content Area */}
-      <div style={{
-        height: '50%', // Takes exactly 50% of remaining space
-        padding: '12px 16px 16px 16px', // Reduced padding to fit content better
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        overflow: 'hidden'
-      }}>
+      <div 
+        className="bhandara-card-content"
+        style={{
+          height: '50%', // Takes exactly 50% of remaining space
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          overflow: 'hidden'
+        }}>
         
         {/* Main Content */}
         <div>
@@ -327,7 +328,9 @@ export const BhandaraCard: React.FC<BhandaraCardProps> = ({ bhandara }) => {
               color: '#ccc',
               margin: 0,
               lineHeight: '1.5',
-              flex: 1
+              flex: 1,
+              wordWrap: 'break-word',
+              overflowWrap: 'break-word'
             }}>
               {bhandara.location_description}
             </p>
@@ -356,7 +359,9 @@ export const BhandaraCard: React.FC<BhandaraCardProps> = ({ bhandara }) => {
                 fontSize: '13px',
                 color: '#ccc',
                 margin: 0,
-                lineHeight: '1.4'
+                lineHeight: '1.4',
+                wordWrap: 'break-word',
+                overflowWrap: 'break-word'
               }}>
                 {bhandara.menu}
               </p>

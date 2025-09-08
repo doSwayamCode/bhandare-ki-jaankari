@@ -416,3 +416,33 @@ input::placeholder, textarea::placeholder {
     transform: translateY(0);
   }
 }
+
+/* Bhandara Card Responsive Heights */
+.bhandara-card {
+  height: 500px; /* Default mobile height */
+}
+
+/* Desktop and larger tablets */
+@media (min-width: 768px) {
+  .bhandara-card {
+    height: 580px; /* Larger height for better content display on PC */
+  }
+}
+
+/* Extra large screens */
+@media (min-width: 1200px) {
+  .bhandara-card {
+    height: 600px; /* Even more space for very large screens */
+  }
+}
+
+/* Bhandara Card Content Area Responsive Padding */
+.bhandara-card-content {
+  padding: 12px 16px 16px 16px; /* Default mobile padding */
+}
+
+@media (min-width: 768px) {
+  .bhandara-card-content {
+    padding: 16px 20px 20px 20px; /* More generous padding on desktop */
+  }
+}
