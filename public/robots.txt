@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Respectful exclusions
+Disallow: /admin
+
+Sitemap: https://bhandare-ki-jaankari.vercel.app/sitemap.xml

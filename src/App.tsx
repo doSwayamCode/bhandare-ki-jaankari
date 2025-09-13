@@ -11,6 +11,7 @@ import { SpeedInsights } from '@vercel/speed-insights/react'
 import { AuthProvider } from './contexts/AuthContext'
 import { useAnalytics } from './hooks/useAnalytics'
 import { NotificationBanner } from './components/NotificationBanner'
+import { CookieConsent } from './components/CookieConsent'
 
 function AppRoutes() {
   useAnalytics() // Track page views
@@ -36,6 +37,7 @@ function App() {
           <AppRoutes />
         </Router>
       </AuthProvider>
+      <CookieConsent />
       <NotificationBanner />
       <Analytics />
       <SpeedInsights />

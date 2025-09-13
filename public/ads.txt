@@ -1,0 +1,2 @@
+google.com, pub-7484133894333570, DIRECT, f08c47fec0942fa0
+# If you use any other ad networks, add their entries here.
