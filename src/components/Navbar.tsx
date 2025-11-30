@@ -148,6 +148,19 @@ export const Navbar: React.FC<NavbarProps> = ({ showForm, onToggleForm }) => {
           >
             Contact
           </Link>
+            <Link
+            to="/contact"
+            style={{
+              color: location.pathname === '/contact' ? '#ff6b35' : '#ccc',
+              textDecoration: 'none',
+              fontWeight: '500',
+              fontSize: '14px',
+              transition: 'color 0.2s ease',
+              padding: '8px 0'
+            }}
+          >
+            Swayam
+          </Link>
         </nav>
 
         {/* Mobile Hamburger Button */}
